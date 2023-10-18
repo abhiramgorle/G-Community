@@ -1,20 +1,56 @@
-import React,{useState} from 'react'
+import React,{useState,useContext, useEffect} from 'react'
 import login from '../../Assets/loginpic.png'
 import logo from '../../Assets/logo.png'
-import googlelogo from '../../Assets/Google Logo.png'
-import {useNavigate } from 'react-router-dom';
+// import googlelogo from '../../Assets/Google Logo.png'
+import {useNavigate} from 'react-router-dom';
+import { db} from "../Firebase/Firebase";
+import {
+  query,
+  where,
+  collection,
+  getDocs,
+  addDoc,
+} from "firebase/firestore";
+import { AuthContext } from '../Appcontext/AppContext'
 const Signup = () => {
-    const navigate = useNavigate();
+    const currentURL = window.location.href;
+    const urlSegments = currentURL.split('/');
+    const uid = urlSegments[urlSegments.length - 1];
+    console.log(uid);
+
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [phone, setPhone] = useState('')
     const [year, setYear] = useState('')
-    const [password, setPassword] = useState('');
+    const { completeSignUp} = useContext(AuthContext);
+    const collectionUsersRef = collection(db, "users");
+    const q = query(collectionUsersRef, where("uid", "==", uid));
+    const fetchData = async () => {
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            console.log(doc.data().name);
+            global.namebef = doc.data().name;
+            global.emailbef = doc.data().email;
+        });
+        setName(global.namebef);
+    setEmail(global.emailbef);
+    };
+    fetchData();
+    
+    
+
+    // const navigate = useNavigate();
+    console.log(global.namebef,"name assigned");
+
+
+    
+    
+    // const [password, setPassword] = useState('');
  
     
  
    const onSubmit = (e) => {
-        e.preventDefault();
+    completeSignUp(uid,phone,year)
       };
     
   return (
@@ -30,7 +66,7 @@ const Signup = () => {
                 <img src={logo} alt='logo' className='w-2/3'></img>
             </div>
             <div className=''>
-                <span className='text-lg font-bold'>Signin into your Account</span>
+                <span className='text-lg font-bold'>Create your Account</span>
             </div>
             <div className='flex flex-col justify-start h-3/7 space-y-3 mx-6 my-2 '>
                 <form>
@@ -67,7 +103,7 @@ const Signup = () => {
                     </div>
 
                 </div>
-                <div className='flex flex-row gap-2 my-2'>
+                {/* <div className='flex flex-row gap-2 my-2'>
                     <div className='flex flex-col w-1/2'>
                         <span className='text-base font-light text-left'>Password</span>
                         <input type='password'placeholder=' Enter your Password' value={password} onChange={(e) => setPassword(e.target.value)} className=' bg-inputgray rounded-md h-10 p-2 placeholder:italic placeholder:text-slate-300'></input>    
@@ -76,19 +112,19 @@ const Signup = () => {
                         <span className='text-base font-light text-left'>Re-enter Password</span>
                         <input type='password' placeholder=' Re-Enter your Password' className=' bg-inputgray rounded-md  h-10 p-2 placeholder:italic placeholder:text-slate-300'></input>
                     </div>
-                </div>
+                </div> */}
                 </form>
-                <a href='https://github.com' className='text-end'><span className='text-base font-light text-end'>Forgot Password?</span></a>
+                {/* <a href='https://github.com' className='text-end'><span className='text-base font-light text-end'>Forgot Password?</span></a> */}
                 <button className='bg-mi text-white font-bold rounded-md p-2' onClick={onSubmit} >Sign Up</button>
             </div>
-            <div className=' flex flex-row mx-10 justify-items-stretch '>
+            {/* <div className=' flex flex-row mx-10 justify-items-stretch '>
                 <img src={googlelogo} alt='googlelogo' className='m-1'></img>
                 <a href='https://github.com' className='mx-4'><span className='text-lg font-normal text-gray '>Signin With Google</span></a>
 
             </div>
             <div className=' gap-1 mx-6 justify-items-stretch '>
                 <a className='border-2 border-mi text-mi font-bold rounded-md p-2' href='/login'>Login Now</a>
-            </div>
+            </div> */}
         </div>
     </div>
     
